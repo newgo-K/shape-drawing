@@ -1,5 +1,5 @@
 {
-  "name": "drawing-web",
+  "name": "shape-drawing",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

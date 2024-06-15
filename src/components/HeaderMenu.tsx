@@ -1,11 +1,15 @@
+import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import { MENU_TYPE, MenuType } from "../types/menu";
 import { DRAW_TYPE, DrawType } from "../types/shape";
+import { useShapesContext } from "../context/ShapesContext";
 
 const HeaderMenu = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const { allClear } = useShapesContext();
 
   const setShapeType = (type: DrawType) => {
     const params = new URLSearchParams(location.search);
@@ -20,6 +24,21 @@ const HeaderMenu = () => {
     params.set("menu", type);
     navigate({ search: params.toString() });
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const menuType = params.get("menu");
+
+    switch (menuType) {
+      case MENU_TYPE.ALL_CLEAR: {
+        allClear();
+        break;
+      }
+    }
+
+    params.delete("menu");
+    navigate({ search: params.toString() }, { replace: true });
+  }, [location.search, navigate, allClear]);
 
   return (
     <div>

@@ -2,11 +2,14 @@ import { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 import { Shape, DRAW_TYPE, DrawType } from "../types/shape";
+import { useShapesContext } from "../context/ShapesContext";
 
 type Position = { x: number; y: number };
 
-export const useCanvas = (addShape: (id: number, shape: Shape) => void) => {
+export const useCanvas = () => {
   const location = useLocation();
+
+  const { addShape } = useShapesContext();
 
   const canvasRef = useRef<HTMLUListElement | null>(null);
 
@@ -74,7 +77,7 @@ export const useCanvas = (addShape: (id: number, shape: Shape) => void) => {
     if (endPos) {
       const newShape = calculateShape(startPos, endPos);
 
-      addShape(Date.now(), newShape);
+      addShape(newShape);
       setDrawing(false);
       setCurrentShape(null);
     }

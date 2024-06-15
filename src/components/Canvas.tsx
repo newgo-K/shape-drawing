@@ -4,14 +4,14 @@ import { useShapesContext } from "../context/ShapesContext";
 import Shape from "./Shape";
 
 const Canvas = () => {
-  const { shapes, addShape } = useShapesContext();
+  const { shapes } = useShapesContext();
   const {
     canvasRef,
     currentShape,
     handleMouseDown,
     handleMouseMove,
     handleMouseUp,
-  } = useCanvas(addShape);
+  } = useCanvas();
 
   return (
     <ul

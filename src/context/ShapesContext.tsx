@@ -2,17 +2,19 @@ import {
   createContext,
   useContext,
   useState,
-  useEffect,
   ReactNode,
+  useEffect,
 } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 
 import { Shape } from "../types/shape";
-import { MENU_TYPE } from "../types/menu";
+import {
+  getLocalStorageItem,
+  setLocalStorageItem,
+} from "../utils/localStorage";
 
 interface ShapesContextType {
   shapes: Map<number, Shape>;
-  addShape: (id: number, shape: Shape) => void;
+  addShape: (shape: Shape) => void;
   allClear: () => void;
 }
 
@@ -20,36 +22,28 @@ interface ShapesProviderProps {
   children: ReactNode;
 }
 
+const STORAGE_KEY = "shapes";
+
 const ShapesContext = createContext<ShapesContextType | undefined>(undefined);
 
 export const ShapesProvider = ({ children }: ShapesProviderProps) => {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const [shapes, setShapes] = useState<Map<number, Shape>>(() =>
+    getLocalStorageItem(STORAGE_KEY)
+  );
 
-  const [shapes, setShapes] = useState<Map<number, Shape>>(new Map());
+  useEffect(() => {
+    setLocalStorageItem(STORAGE_KEY, shapes);
+  }, [shapes]);
 
-  const addShape = (id: number, shape: Shape) => {
-    setShapes(new Map(shapes.set(id, shape)));
+  const addShape = (shape: Shape) => {
+    const newShape = { ...shape, id: Date.now() };
+
+    setShapes(new Map(shapes.set(newShape.id, newShape)));
   };
 
   const allClear = () => {
     setShapes(new Map());
   };
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const menuType = params.get("menu");
-
-    switch (menuType) {
-      case MENU_TYPE.ALL_CLEAR: {
-        allClear();
-        break;
-      }
-    }
-
-    params.delete("menu");
-    navigate({ search: params.toString() }, { replace: true });
-  }, [location.search, navigate]);
 
   return (
     <ShapesContext.Provider value={{ shapes, addShape, allClear }}>
